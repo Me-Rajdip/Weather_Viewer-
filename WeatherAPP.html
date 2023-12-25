@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+</head>
+
+<body>
+    <form id="frm">
+        <input type="text" id="search" placeholder="Search by Location" autocomplete="off">
+    </form>
+
+    <main id="main"> </main>
+
+</body>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: "poppins", sans-serif;
+        background-color: rgb(3, 49, 69);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-size: 1rem;
+    }
+
+    input {
+        padding: 1rem;
+        border-radius: 40px;
+        border: 3px solid blueviolet;
+        box-shadow: inset 0 0 18px rgb(55, 3, 3),
+            inset 6px 0 18px #8a2dee,
+            inset -6px 0 18px rgb(3, 57, 57), inset 6px 0 30px #1e1b1d,
+            inset -6px 0 30px rgb(3, 54, 54),
+            0 0 18px rgb(76, 4, 4), -4px 0 18px #450323, 4px 0 18px rgb(4, 58, 58);
+        min-width: 71vh;
+        font-size: 5vh;
+    }
+
+    input:focus {
+        outline: none;
+    }
+
+    .weather {
+        text-align: center;
+        font-size: 2rem;
+    }
+
+    .weather h2 {
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+    }
+</style>
+
+<script>
+    const apiKey = "2f9a3827a40b089a650bad9d4ae47e71";
+
+    const main = document.getElementById('main');
+    const form = document.getElementById('frm');
+    const search = document.getElementById('search');
+
+     /*const url = (city) => `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={lat}&lon={lon}&dt={time}&appid=2f9a3827a40b089a650bad9d4ae47e71`;
+     const url = (city) => `http://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=2f9a3827a40b089a650bad9d4ae47e71`;
+   const url = (city) => `http://api.openweathermap.org/data/2.5/forecast?id=524901&appid=2f9a3827a40b089a650bad9d4ae47e71`;*/
+   const url = (city) => `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
+   
+
+
+    async function getWeatherByLocation(city) {
+
+        const resp = await fetch(url(city), {
+            origin: "cros"
+        });
+        const respData = await resp.json();
+
+        addWeatherToPage(respData);
+
+    }
+
+    function addWeatherToPage(data) {
+        const temp = Ktoc(data.main.temp);
+
+        const weather = document.createElement('div');
+        weather.classList.add('weather');
+
+        weather.innerHTML = `
+          <h2><img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" /> ${temp}°C <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" /></h2>
+          <small>${data.weather[0].main}</small>
+          
+          `;
+
+
+        //   cleanup 
+        main.innerHTML = "";
+        main.appendChild(weather);
+    };
+
+
+    function Ktoc(K) {
+        return Math.floor(K - 273);
+    }
+
+
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const city = search.value;
+
+        if (city) {
+            getWeatherByLocation(city)
+        }
+
+    });
+</script>
+
+</html>
